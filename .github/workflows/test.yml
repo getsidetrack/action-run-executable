@@ -1,0 +1,19 @@
+on: push
+
+jobs:
+  test:
+    runs-on: macos-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - id: swiftformat
+        uses: ./
+        with:
+          repo: 'nicklockwood/SwiftFormat'
+          file: 'swiftformat.zip'
+          path: 'swiftformat'
+          commandArguments: '--version'
+      
+      - name: Print Output
+        run: echo "SwiftFormat version v${{ steps.swiftformat.outputs.commandOutput }} status:${{ steps.swiftformat.outputs.exitCode }}"

@@ -1,0 +1,36 @@
+name: 'Run Artifact Executable'
+description: 'Allows you to run an executable stored as a GitHub release artifact.'
+inputs:
+  repo:
+    description: 'The owner and repository name.'
+    required: true
+  file:
+    description: 'The name of the artifact.'
+    required: true
+  path:
+    description: 'The path to the executable.'
+    required: true
+  ref:
+    description: 'The tag name to fetch the artifact from.'
+    default: 'latest'
+  useExecutableExitCode:
+    description: 'Return the exit code from the executable.'
+    default: true
+  commandArguments:
+    description: 'The arguments to be provided to the executable.'
+outputs:
+  exitCode:
+    description: 'The exit code returned by the executable where 0 means it was successful.'
+    value: ${{ steps.script.outputs.exitCode }}
+  commandOutput:
+    description: 'The raw output from the command.'
+    value: ${{ steps.script.outputs.commandOutput }}
+
+runs:
+  using: 'composite'
+  steps:
+    - run: echo "${{ github.action_path }}" >> $GITHUB_PATH
+      shell: bash
+    - id: script
+      run: entrypoint.sh -a "${{ inputs.repo }}" -b "${{ inputs.ref }}" -c "${{ inputs.file }}" -d "${{ inputs.path }}" -e "${{ inputs.commandArguments }}" -f "${{ inputs.useExecutableExitCode }}"
+      shell: bash
